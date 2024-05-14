@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import { themeChange } from 'theme-change'
 import checkAuth from './app/auth';
 import initializeApp from './app/init';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Importing pages
 const Layout = lazy(() => import('./containers/Layout'))
@@ -45,6 +47,7 @@ function App() {
 
         </Routes>
       </Router>
+      <ToastContainer/>
     </>
   )
 }

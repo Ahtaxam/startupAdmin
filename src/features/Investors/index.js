@@ -2,25 +2,19 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import TitleCard from "../../components/Cards/TitleCard";
-import { openModal } from "../common/modalSlice";
-import { deleteLead, getLeadsContent } from "./leadSlice";
-import {
-  CONFIRMATION_MODAL_CLOSE_TYPES,
-  MODAL_BODY_TYPES,
-} from "../../utils/globalConstantUtil";
 import TrashIcon from "@heroicons/react/24/outline/TrashIcon";
-import { showNotification } from "../common/headerSlice";
-import { fetchData } from "../../utils/apiRequests";
+import { Button } from "flowbite-react";
+import { toast } from "react-toastify";
 
-function Leads() {
+function Investors() {
   const { leads } = useSelector((state) => state.lead);
-  const [users, setUsers] = useState([])
+  const [users, setUsers] = useState([]);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     (async () => {
       const result = await fetch(
-        process.env.REACT_APP_BASE_URL + "/api/v1/users/all",
+        process.env.REACT_APP_BASE_URL + "/api/v1/investor/all",
         {
           method: "GET",
           headers: {
@@ -30,16 +24,33 @@ function Leads() {
         }
       );
       const data = await result.json();
-      setUsers(data?.data)
+      setUsers(data?.data);
     })();
   }, []);
 
+  const deleteCurrentLead = (id) => {};
 
-  const deleteCurrentLead = (id) => {}
+  const handleApproveStatus = async (id) => {
+    const result = await fetch(
+      process.env.REACT_APP_BASE_URL + "/api/v1/investor/status/" + id,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          status: "Approved",
+        }),
+      }
+    );
+    const { message, data } = await result.json();
+    toast.success(message);
+  };
 
   return (
     <>
-      <TitleCard title="Current Users" topMargin="mt-2">
+      <TitleCard title="Investors" topMargin="mt-2">
         {/* Leads List in table format loaded from slice after api call */}
         <div className="overflow-x-auto w-full">
           <table className="table w-full">
@@ -48,6 +59,7 @@ function Leads() {
                 <th>Name</th>
                 <th>Email Id</th>
                 <th>Role</th>
+                <th>status</th>
               </tr>
             </thead>
             <tbody>
@@ -71,6 +83,7 @@ function Leads() {
                     </td>
                     <td>{user.email}</td>
                     <td>{user.role}</td>
+                    <td>{user.status}</td>
                     <td>
                       <button
                         className="btn btn-square btn-ghost"
@@ -78,6 +91,14 @@ function Leads() {
                       >
                         <TrashIcon className="w-5" />
                       </button>
+                    </td>
+                    <td>
+                      <Button
+                        // className="btn btn-square btn-ghost"
+                        onClick={() => handleApproveStatus(user._id)}
+                      >
+                        Approve
+                      </Button>
                     </td>
                   </tr>
                 );
@@ -90,4 +111,4 @@ function Leads() {
   );
 }
 
-export default Leads;
+export default Investors;
