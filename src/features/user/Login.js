@@ -1,37 +1,37 @@
-import { useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import LandingIntro from "./LandingIntro";
-import ErrorText from "../../components/Typography/ErrorText";
-import InputText from "../../components/Input/InputText";
-import { toast } from "react-toastify";
+import { useState, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import LandingIntro from './LandingIntro';
+import ErrorText from '../../components/Typography/ErrorText';
+import InputText from '../../components/Input/InputText';
+import { toast } from 'react-toastify';
 
 function Login() {
   const INITIAL_LOGIN_OBJ = {
-    password: "",
-    emailId: "",
+    password: '',
+    emailId: '',
   };
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState('');
   const [loginObj, setLoginObj] = useState(INITIAL_LOGIN_OBJ);
 
   const submitForm = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
+    setErrorMessage('');
 
-    if (loginObj.emailId.trim() === "")
-      return setErrorMessage("Email Id is required! (use any value)");
-    if (loginObj.password.trim() === "")
-      return setErrorMessage("Password is required! (use any value)");
+    if (loginObj.emailId.trim() === '')
+      return setErrorMessage('Email Id is required! (use any value)');
+    if (loginObj.password.trim() === '')
+      return setErrorMessage('Password is required! (use any value)');
     else {
-      //   setLoading(true);
+      setLoading(true);
       const result = await fetch(
         `${process.env.REACT_APP_BASE_URL}/api/v1/login`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             email: loginObj.emailId,
@@ -42,8 +42,9 @@ function Login() {
       if (!result.ok) {
         // Handle the error response
         const errorData = await result.json();
-        console.error("Error:", errorData);
+        console.error('Error:', errorData);
         toast.error(errorData.message);
+        setLoading(false);
       } else {
         // Handle the successful response
         const { message, data, token } = await result.json();
@@ -51,68 +52,64 @@ function Login() {
         //   toast.error("Invalid Credentials");
         //   return;
         // }
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(data))
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(data));
+        setLoading(false);
         toast.success(message);
-        navigate("/app/dashboard");
+        navigate('/app/dashboard');
       }
     }
   };
 
   const updateFormValue = ({ updateType, value }) => {
-    setErrorMessage("");
+    setErrorMessage('');
     setLoginObj({ ...loginObj, [updateType]: value });
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center">
-      <div className="card mx-auto w-full max-w-[600px]  shadow-xl">
+    <div className='min-h-screen bg-base-200 flex items-center'>
+      <div className='card mx-auto w-full max-w-[600px]  shadow-xl'>
         <div>
-          <div className="py-24 px-10">
-            <h2 className="text-2xl font-semibold mb-2 text-center">Login</h2>
+          <div className='py-24 px-10'>
+            <h2 className='text-2xl font-semibold mb-2 text-center'>Login</h2>
             <form onSubmit={(e) => submitForm(e)}>
-              <div className="mb-4">
+              <div className='mb-4'>
                 <InputText
-                  type="emailId"
+                  type='emailId'
                   defaultValue={loginObj.emailId}
-                  updateType="emailId"
-                  containerStyle="mt-4"
-                  labelTitle="Email Id"
+                  updateType='emailId'
+                  containerStyle='mt-4'
+                  labelTitle='Email Id'
                   updateFormValue={updateFormValue}
                 />
 
                 <InputText
                   defaultValue={loginObj.password}
-                  type="password"
-                  updateType="password"
-                  containerStyle="mt-4"
-                  labelTitle="Password"
+                  type='password'
+                  updateType='password'
+                  containerStyle='mt-4'
+                  labelTitle='Password'
                   updateFormValue={updateFormValue}
                 />
               </div>
 
-              <div className="text-right text-primary">
-                <Link to="/forgot-password">
-                  <span className="text-sm  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
+              <div className='text-right text-primary'>
+                <Link to='/forgot-password'>
+                  <span className='text-sm  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200'>
                     Forgot Password?
                   </span>
                 </Link>
               </div>
 
-              <ErrorText styleClass="mt-8">{errorMessage}</ErrorText>
-              <button
-                type="submit"
-                className={
-                  "btn mt-2 w-full btn-primary" + (loading ? " loading" : "")
-                }
-              >
-                Login
+              <ErrorText styleClass='mt-8'>{errorMessage}</ErrorText>
+              <button type='submit' className={'btn mt-2 w-full btn-primary'}>
+                {loading ? 'logging...' : 'Login'}
               </button>
 
-              <div className="text-center mt-4">
-                Don't have an account yet?{" "}
-                <Link to="/register">
-                  <span className="  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
+              <div className='text-center mt-4'>
+                Don't have an account yet?{' '}
+                <Link to='/register'>
+                  <span className='  inline-block  hover:text-primary hover:underline hover:cursor-pointer transition duration-200'>
                     Register
                   </span>
                 </Link>
